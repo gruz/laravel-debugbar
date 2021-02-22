@@ -38,7 +38,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         );
 
         $this->app->singleton(LaravelDebugbar::class, function () {
-                $debugbar = new LaravelDebugbar($this->app);
+            $debugbar = new LaravelDebugbar($this->app);
 
             if ($this->app->bound(SessionManager::class)) {
                 $sessionManager = $this->app->make(SessionManager::class);
@@ -46,7 +46,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
                 $debugbar->setHttpDriver($httpDriver);
             }
 
-                return $debugbar;
+            return $debugbar;
         });
 
         $this->app->alias(LaravelDebugbar::class, 'debugbar');
@@ -76,7 +76,9 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         $configPath = __DIR__ . '/../config/debugbar.php';
         $this->publishes([$configPath => $this->getConfigPath()], 'config');
 
-        $this->registerMiddleware(InjectDebugbar::class);
+        if (!$this->app->runningInConsole() || $this->app->runningUnitTests()) {
+            $this->registerMiddleware(InjectDebugbar::class);
+        }
     }
 
     /**
